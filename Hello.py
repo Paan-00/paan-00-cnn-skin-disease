@@ -14,38 +14,49 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+import tensorflow as tf
+import numpy as np
+
+st.set_page_config(page_title='Detection System', page_icon='🔍')
+    
 
 LOGGER = get_logger(__name__)
 
+#Sidebar
+st.sidebar.title("Dashboard")
+app_mode = st.sidebar.selectbox("Select Page",["Home","Disease Recognition"])
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+#Main Page
+if(app_mode=="Home"):
+    st.header("SKIN DISEASE DETECTION SYSTEM")
+    #image_path = "home_page.jpeg"
+    #st.image(image_path,use_column_width=True)
+    st.markdown("""
+    Welcome to the Skin Disease Detection System! 🔍
+    
+    Our mission is to help in identifying skin diseases efficiently. Scan the surface of skin, and our system will analyze it to detect any signs of diseases. Together, let's protect our skin and ensure a healthier body!
 
-    st.write("# Welcome to Streamlit! 👋")
+    ### How It Works
+    1. **Scan:** Go to the **Disease Recognition** page and scan the surface of skin with suspected diseases.
+    2. **Analysis:** Our system will process the image using advanced algorithms to identify potential diseases.
+    3. **Results:** View the results and recommendations for further action.
 
-    st.sidebar.success("Select a demo above.")
+    ### Why Choose Us?
+    - **Accuracy:** Our system utilizes state-of-the-art machine learning techniques for accurate disease detection.
+    - **User-Friendly:** Simple and intuitive interface for seamless user experience.
+    - **Fast and Efficient:** Receive results in seconds, allowing for quick decision-making.
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+    ### Get Started
+    Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
+    """)
+elif(app_mode=="Disease Recognition"):
+    st.header("Disease Recognition")
+    test_image = st.file_uploader("Choose an Image:")
+    if(st.button("Show Image")):
+        st.image(test_image,width=4,use_column_width=True)
+    #Predict button
+    if(st.button("Predict")):
+        st.snow()
+        st.write("Our Prediction")
+        result_index = model_prediction(test_image)
 
-
-if __name__ == "__main__":
-    run()
