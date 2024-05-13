@@ -1,4 +1,0 @@
-git add cnn_skin_disease_model.keras
-git commit -m "Add trained Keras model"
-
-
