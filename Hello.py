@@ -28,13 +28,12 @@ st.set_page_config(
 def model_prediction(input_image):
     try:
         trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
-        image = Image.open(input_image)
-        image = image.resize((128, 128))
+        image = Image.open(io.BytesIO(input_image))
+        image = image.resize((128, 128)) 
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
-        input_arr = np.array([input_arr])  # To convert single image to batch
+        input_arr = np.array([input_arr])  # Convert single image to batch
         predictions = trained_model.predict(input_arr)
         result_index = np.argmax(predictions)
-
         return result_index
     except Exception as e:
         st.error(f"Error in model prediction: {e}")
