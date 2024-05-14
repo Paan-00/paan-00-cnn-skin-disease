@@ -17,6 +17,7 @@ from streamlit.logger import get_logger
 import tensorflow as tf
 import numpy as np
 from PIL import Image 
+import io
 
 st.set_page_config(
     page_title="Detection System",
