@@ -17,10 +17,30 @@ from streamlit.logger import get_logger
 import tensorflow as tf
 import numpy as np
 
-st.set_page_config(page_title='Detection System', page_icon='🔍')
-    
+st.set_page_config(
+    page_title="Detection System",
+    page_icon= "🔍",
+    initial_sidebar_state = "auto"
+)    
 
-LOGGER = get_logger(__name__)
+# Tensorflow model prediction
+def model_prediction(input_image):
+    trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
+    image = tf.keras.preprocessing.image.load_img(input_image,target_size=(228,228))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    input_arr = np.array([input_arr]) # To convert single image to batch
+    predictions = trained_model.predict(input_arr)
+    result_index = np.argmax(predictions)
+
+    return result_index
+
+st.markdown("""
+<style>
+    [data-testid=stSidebar] {
+        background-color: #bff2ca;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 #Sidebar
 st.sidebar.title("Dashboard")
@@ -49,14 +69,23 @@ if(app_mode=="Home"):
     ### Get Started
     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
     """)
-elif(app_mode=="Disease Recognition"):
+elif choose == "Disease Recognition":
     st.header("Disease Recognition")
-    test_image = st.file_uploader("Choose an Image:")
-    if(st.button("Show Image")):
-        st.image(test_image,width=4,use_column_width=True)
-    #Predict button
-    if(st.button("Predict")):
-        st.snow()
+    input_image = st.file_uploader("Choose an Image:",type=['jpg', 'png', 'jpeg'])
+    if not input_image:
+        input_image = "Images/test.jpg"
+    if st.button("show image"):
+        st.image(input_image, use_column_width=True)
+    
+    # Predicting Image
+    if st.button("Predict"):
         st.write("Our Prediction")
-        result_index = model_prediction(test_image)
+        result_index = model_prediction(input_image)
+        class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+
+        model_predicted = class_name[result_index]
+        st.success("Model is Predicting it's a {}".format(model_predicted))
+
+
+
 
