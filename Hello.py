@@ -25,14 +25,19 @@ st.set_page_config(
 
 # Tensorflow model prediction
 def model_prediction(input_image):
-    trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
-    image = tf.keras.preprocessing.image.load_img(input_image,target_size=(228,228))
-    input_arr = tf.keras.preprocessing.image.img_to_array(image)
-    input_arr = np.array([input_arr]) # To convert single image to batch
-    predictions = trained_model.predict(input_arr)
-    result_index = np.argmax(predictions)
+    try:
+        trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
+        image = Image.open(input_image)
+        image = image.resize((228, 228))
+        input_arr = tf.keras.preprocessing.image.img_to_array(image)
+        input_arr = np.array([input_arr])  # To convert single image to batch
+        predictions = trained_model.predict(input_arr)
+        result_index = np.argmax(predictions)
 
-    return result_index
+        return result_index
+    except Exception as e:
+        st.error(f"Error in model prediction: {e}")
+        return None
 
 st.markdown("""
 <style>
