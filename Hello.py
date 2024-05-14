@@ -76,20 +76,20 @@ if(app_mode=="Home"):
     """)
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
-    input_image = st.file_uploader("Choose an Image:",type=['jpg', 'png', 'jpeg'])
-    if not input_image:
-        print("Please upload an image.")
-    if st.button("show image"):
+    input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
+    if input_image:
         st.image(input_image, use_column_width=True)
-    
-    # Predicting Image
-    if st.button("Predict"):
-        st.write("Our Prediction")
-        result_index = model_prediction(input_image)
-        class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
-
-        model_predicted = class_name[result_index]
-        st.success("Model is Predicting it's a {}".format(model_predicted))
+        
+        # Predicting Image
+        if st.button("Predict"):
+            st.write("Our Prediction")
+            result_index = model_prediction(input_image)
+            if result_index is not None:
+                class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                model_predicted = class_name[result_index]
+                st.success(f"Model is Predicting it's {model_predicted}")
+            else:
+                st.error("Prediction failed. Please try again.")
 
 
 
