@@ -69,11 +69,11 @@ if(app_mode=="Home"):
     ### Get Started
     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
     """)
-elif choose == "Disease Recognition":
+elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
     input_image = st.file_uploader("Choose an Image:",type=['jpg', 'png', 'jpeg'])
     if not input_image:
-        input_image = "Images/test.jpg"
+        print("Please upload an image.")
     if st.button("show image"):
         st.image(input_image, use_column_width=True)
     
