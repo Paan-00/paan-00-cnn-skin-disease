@@ -29,7 +29,7 @@ def model_prediction(input_image):
     try:
         trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
         image = Image.open(input_image)
-        image = image.resize((228, 228))
+        image = image.resize((128, 128))
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
         input_arr = np.array([input_arr])  # To convert single image to batch
         predictions = trained_model.predict(input_arr)
