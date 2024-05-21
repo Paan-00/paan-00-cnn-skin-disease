@@ -36,7 +36,7 @@ class VideoTransformer(VideoTransformerBase):
         img = Image.fromarray(frame.to_ndarray(format="bgr24"))
         result_index = model_prediction(img)
         if result_index is not None:
-            class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+            class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
             model_predicted = class_name[result_index]
             st.success(f"Model is Predicting it's {model_predicted}")
         return frame
@@ -89,7 +89,7 @@ elif app_mode == "Disease Recognition":
                 image = Image.open(io.BytesIO(input_image.read()))  # Read the content as bytes
                 result_index = model_prediction(image)
                 if result_index is not None:
-                    class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                    class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                     model_predicted = class_name[result_index]
                     st.success(f"Model is Predicting it's {model_predicted}")
                 else:
