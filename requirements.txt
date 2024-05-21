@@ -6,3 +6,5 @@ streamlit_option_menu
 tensorflow-cpu
 scikit-learn
 streamlit-webrtc
+webrtc_streamer
+VideoTransformerBase
