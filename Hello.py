@@ -1,36 +1,52 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+import cv2
 import streamlit as st
-from streamlit.logger import get_logger
 import tensorflow as tf
 import numpy as np
+from PIL import Image
+import io
 
-st.set_page_config(page_title='Detection System', page_icon='🔍')
-    
+st.set_page_config(
+    page_title="Detection System",
+    page_icon="🔍",
+    initial_sidebar_state="auto"
+)
 
-LOGGER = get_logger(__name__)
+# Tensorflow model prediction
+def model_prediction(input_image):
+    try:
+        # Load the trained model
+        trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
+        
+        # Read and preprocess the image
+        image = Image.open(io.BytesIO(input_image.read()))  # Read the content as bytes
+        image = image.resize((128, 128))  # Ensure the image is the correct size for the model
+        input_arr = tf.keras.preprocessing.image.img_to_array(image)
+        input_arr = np.array([input_arr])  # Convert single image to batch
 
-#Sidebar
+        # Perform the prediction
+        predictions = trained_model.predict(input_arr)
+        result_index = np.argmax(predictions)
+        
+        return result_index
+    except Exception as e:
+        st.error(f"Error in model prediction: {e}")
+        return None
+
+st.markdown("""
+<style>
+    [data-testid=stSidebar] {
+        background-color: #bff2ca;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Sidebar
 st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page",["Home","Disease Recognition"])
+app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
 
-#Main Page
-if(app_mode=="Home"):
+# Main Page
+if app_mode == "Home":
     st.header("SKIN DISEASE DETECTION SYSTEM")
-    #image_path = "home_page.jpeg"
-    #st.image(image_path,use_column_width=True)
     st.markdown("""
     Welcome to the Skin Disease Detection System! 🔍
     
@@ -47,16 +63,21 @@ if(app_mode=="Home"):
     - **Fast and Efficient:** Receive results in seconds, allowing for quick decision-making.
 
     ### Get Started
-    Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
+    Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Skin Disease Recognition System!
     """)
-elif(app_mode=="Disease Recognition"):
+elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
-    test_image = st.file_uploader("Choose an Image:")
-    if(st.button("Show Image")):
-        st.image(test_image,width=4,use_column_width=True)
-    #Predict button
-    if(st.button("Predict")):
-        st.snow()
-        st.write("Our Prediction")
-        result_index = model_prediction(test_image)
-
+    input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
+    if input_image:
+        st.image(input_image, use_column_width=True)
+        
+        # Predicting Image
+        if st.button("Predict"):
+            st.write("Our Prediction")
+            result_index = model_prediction(input_image)
+            if result_index is not None:
+                class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                model_predicted = class_name[result_index]
+                st.success(f"Model is Predicting it's {model_predicted}")
+            else:
+                st.error("Prediction failed. Please try again.")

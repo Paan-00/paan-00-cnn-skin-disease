@@ -1,5 +1,7 @@
-altair
+keras
 numpy
-pandas
-pydeck
+Pillow
 streamlit
+streamlit_option_menu
+tensorflow-cpu
+scikit-learn
