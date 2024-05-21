@@ -1,4 +1,3 @@
-import cv2
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -76,7 +75,7 @@ elif app_mode == "Disease Recognition":
             st.write("Our Prediction")
             result_index = model_prediction(input_image)
             if result_index is not None:
-                class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                 model_predicted = class_name[result_index]
                 st.success(f"Model is Predicting it's {model_predicted}")
             else:
