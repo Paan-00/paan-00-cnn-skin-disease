@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
+import os
 
 st.set_page_config(
     page_title="Detection System",
@@ -13,8 +14,12 @@ st.set_page_config(
 # Tensorflow model prediction
 def model_prediction(input_image):
     try:
+        model_path = "cnn_skin_disease_model.keras"
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"File not found: {model_path}. Please ensure the file is an accessible .keras zip file.")
+        
         # Load the trained model
-        trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
+        trained_model = tf.keras.models.load_model(model_path)
         
         # Read and preprocess the image
         image = Image.open(io.BytesIO(input_image.read()))  # Read the content as bytes
