@@ -5,7 +5,6 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
-import os
 
 st.set_page_config(
     page_title="Detection System",
@@ -45,14 +44,7 @@ def model_prediction(input_image, model):
         return None
 
 # Load the trained model
-model_path = "cnn_skin_disease_model.h5"  # Updated to use .h5 file
-
-# Debugging: Check if the file exists
-if os.path.exists(model_path):
-    st.success(f"Model file found at {model_path}")
-else:
-    st.error(f"Model file not found at {model_path}. Please check the file path.")
-
+model_path = "cnn_skin_disease_model.keras"
 try:
     trained_model = tf.keras.models.load_model(model_path)
     st.success(f"Model loaded successfully from {model_path}")
@@ -100,4 +92,28 @@ elif app_mode == "Disease Recognition":
     if input_method == "Upload Image":
         input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
         if input_image:
-            st.image
+            st.image(input_image, use_column_width=True)
+            
+            # Predicting Image
+            if st.button("Predict"):
+                st.write("Our Prediction")
+                if trained_model:
+                    result_index = model_prediction(input_image, trained_model)
+                    if result_index is not None:
+                        class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
+                        model_predicted = class_name[result_index]
+                        st.success(f"Model is Predicting it's {model_predicted}")
+                    else:
+                        st.error("Prediction failed. Please try again.")
+                else:
+                    st.error("Model not loaded. Please check the model file.")
+    elif input_method == "Live Camera":
+        if trained_model:
+            if 'video_transformer' not in st.session_state:
+                st.session_state.video_transformer = VideoTransformer(trained_model)
+
+            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+            if webrtc_ctx.video_transformer:
+                st.write("Using live camera input for prediction")
+        else:
+            st.error("Model not loaded. Please check the model file.")
