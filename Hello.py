@@ -5,6 +5,7 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
+import os
 
 st.set_page_config(
     page_title="Detection System",
@@ -44,7 +45,14 @@ def model_prediction(input_image, model):
         return None
 
 # Load the trained model
-model_path = "cnn_skin_disease_model.keras"
+model_path = "cnn_skin_disease_model.h5"  # Updated to use .h5 file
+
+# Debugging: Check if the file exists
+if os.path.exists(model_path):
+    st.success(f"Model file found at {model_path}")
+else:
+    st.error(f"Model file not found at {model_path}. Please check the file path.")
+
 try:
     trained_model = tf.keras.models.load_model(model_path)
     st.success(f"Model loaded successfully from {model_path}")
