@@ -44,13 +44,13 @@ def model_prediction(input_image, model):
         return None
 
 # Load the trained model
-# Load the model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model = tf.keras.models.load_model('cnn_skin_disease_model.keras')
-    return model
-
-cnn_skin_disease_model = load_model()
+model_path = "cnn_skin_disease_model.keras"
+try:
+    trained_model = tf.keras.models.load_model(model_path)
+    st.success(f"Model loaded successfully from {model_path}")
+except Exception as e:
+    st.error(f"Error loading the model: {e}")
+    trained_model = None
 
 st.markdown("""
 <style>
