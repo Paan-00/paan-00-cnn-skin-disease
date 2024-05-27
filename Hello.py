@@ -46,13 +46,13 @@ def model_prediction(input_image, model):
 # Load the trained model from Google Drive
 @st.cache(allow_output_mutation=True)
 def download_and_load_model(url):
-    output = 'cnn_skin_disease_model.h5'
+    output = 'cnn_skin_disease_model.keras'
     gdown.download(url, output, quiet=False)
     model = tf.keras.models.load_model(output)
     return model
 
 # Replace 'your_google_drive_file_id' with the actual file ID
-google_drive_file_id = 'your_google_drive_file_id'
+google_drive_file_id = '1aM8xrIRtVlElDO7u3-rbg2SGVaJ4uX_-'
 google_drive_link = f'https://drive.google.com/uc?id={google_drive_file_id}'
 trained_model = download_and_load_model(google_drive_link)
 
