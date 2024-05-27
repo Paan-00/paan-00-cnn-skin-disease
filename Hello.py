@@ -5,6 +5,8 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import gdown
+import sys
+import os
 
 st.set_page_config(
     page_title="Detection System",
@@ -47,8 +49,25 @@ def model_prediction(input_image, model):
 @st.cache(allow_output_mutation=True)
 def download_and_load_model(url):
     output = 'cnn_skin_disease_model.keras'
-    gdown.download(url, output, quiet=False)
-    model = tf.keras.models.load_model(output)
+    
+    # Suppress stdout and stderr
+    stderr = sys.stderr
+    stdout = sys.stdout
+    sys.stderr = open(os.devnull, 'w')
+    sys.stdout = open(os.devnull, 'w')
+    
+    try:
+        gdown.download(url, output, quiet=True)
+        model = tf.keras.models.load_model(output)
+    except Exception as e:
+        st.error(f"Error downloading/loading the model: {e}")
+        model = None
+    finally:
+        sys.stderr.close()
+        sys.stdout.close()
+        sys.stderr = stderr
+        sys.stdout = stdout
+    
     return model
 
 # Replace 'your_google_drive_file_id' with the actual file ID
