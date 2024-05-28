@@ -29,7 +29,7 @@ class VideoTransformer(VideoTransformerBase):
 # Tensorflow model prediction
 def model_prediction(input_image):
     trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
-    image = tf.keras.preprocessing.image.load_img(input_image,target_size=(228,228))
+    image = tf.keras.preprocessing.image.load_img(input_image,target_size=(128,128))
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr]) # To convert single image to batch
     predictions = trained_model.predict(input_arr)
@@ -83,7 +83,7 @@ elif app_mode == "Disease Recognition":
                 st.write("Our Prediction")
                 result_index = model_prediction(input_image)
                 if result_index is not None:
-                    class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                    class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                     model_predicted = class_name[result_index]
                     st.success(f"Model is Predicting it's {model_predicted}")
                 else:
