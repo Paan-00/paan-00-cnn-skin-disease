@@ -81,16 +81,14 @@ elif app_mode == "Disease Recognition":
             # Predicting Image
             if st.button("Predict"):
                 st.write("Our Prediction")
-                if trained_model:
-                    result_index = model_prediction(input_image, trained_model)
-                    if result_index is not None:
-                        class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
-                        model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted}")
-                    else:
-                        st.error("Prediction failed. Please try again.")
+                result_index = model_prediction(input_image)
+                if result_index is not None:
+                    class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                    model_predicted = class_name[result_index]
+                    st.success(f"Model is Predicting it's {model_predicted}")
                 else:
-                    st.error("Model not loaded. Please check the model file.")
+                    st.error("Prediction failed. Please try again.")
+
     elif input_method == "Live Camera":
         if trained_model:
             if 'video_transformer' not in st.session_state:
