@@ -3,8 +3,6 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-import av
 
 st.set_page_config(
     page_title="Detection System",
@@ -12,45 +10,20 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-class VideoTransformer(VideoTransformerBase):
-    def __init__(self, model):
-        self.model = model
-
-    def transform(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        img = Image.fromarray(img)
-        img = img.resize((128, 128))
-        input_arr = tf.keras.preprocessing.image.img_to_array(img)
-        input_arr = np.array([input_arr])
-        predictions = self.model.predict(input_arr)
-        result_index = np.argmax(predictions)
-        return predictions, result_index
-
 # Tensorflow model prediction
-def model_prediction(input_image, model):
+def model_prediction(input_image):
     try:
+        trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
         image = Image.open(io.BytesIO(input_image.read()))  # Read the content as bytes
-        image = image.resize((128, 128))  # Ensure the image is the correct size for the model
+        image = image.resize((128, 128))
         input_arr = tf.keras.preprocessing.image.img_to_array(image)
         input_arr = np.array([input_arr])  # Convert single image to batch
-
-        # Perform the prediction
-        predictions = model.predict(input_arr)
+        predictions = trained_model.predict(input_arr)
         result_index = np.argmax(predictions)
-
         return result_index
     except Exception as e:
         st.error(f"Error in model prediction: {e}")
         return None
-
-# Load the trained model
-model_path = "Model/cnn_skin_disease_model.keras"
-try:
-    trained_model = tf.keras.models.load_model(model_path)
-    st.success(f"Model loaded successfully from {model_path}")
-except Exception as e:
-    st.error(f"Error loading the model: {e}")
-    trained_model = None
 
 st.markdown("""
 <style>
@@ -87,33 +60,17 @@ if app_mode == "Home":
     """)
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
-    input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
-    
-    if input_method == "Upload Image":
-        input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
-        if input_image:
-            st.image(input_image, use_column_width=True)
-            
-            # Predicting Image
-            if st.button("Predict"):
-                st.write("Our Prediction")
-                if trained_model:
-                    result_index = model_prediction(input_image, trained_model)
-                    if result_index is not None:
-                        class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
-                        model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted}")
-                    else:
-                        st.error("Prediction failed. Please try again.")
-                else:
-                    st.error("Model not loaded. Please check the model file.")
-    elif input_method == "Live Camera":
-        if trained_model:
-            if 'video_transformer' not in st.session_state:
-                st.session_state.video_transformer = VideoTransformer(trained_model)
-
-            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
-            if webrtc_ctx.video_transformer:
-                st.write("Using live camera input for prediction")
-        else:
-            st.error("Model not loaded. Please check the model file.")
+    input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
+    if input_image:
+        st.image(input_image, use_column_width=True)
+        
+        # Predicting Image
+        if st.button("Predict"):
+            st.write("Our Prediction")
+            result_index = model_prediction(input_image)
+            if result_index is not None:
+                class_name = ['Acne', 'Actinic Keratosis', 'Eczema', 'Melanoma', 'Normal', 'Rosacea']
+                model_predicted = class_name[result_index]
+                st.success(f"Model is Predicting it's {model_predicted}")
+            else:
+                st.error("Prediction failed. Please try again.")
