@@ -102,18 +102,6 @@ elif app_mode == "Disease Recognition":
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
                         st.success(f"Model is Predicting it's {model_predicted}")
-                        # Calculate accuracy
-                        accuracy = None
-                        if ground_truth_labels:
-                            ground_truth_label = ground_truth_labels[input_image_name]  # Get the ground truth label
-                            if ground_truth_label == model_predicted:
-                                accuracy = 1.0  # Correct prediction
-                            else:
-                                accuracy = 0.0  # Incorrect prediction
-            
-                        # Display accuracy
-                        if accuracy is not None:
-                            st.info(f"Accuracy: {accuracy:.2f}")
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
