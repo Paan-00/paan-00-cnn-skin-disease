@@ -44,7 +44,7 @@ def model_prediction(input_image, model):
         return None
 
 # Load the trained model
-model_path = "cnn_skin_disease_model.keras"
+model_path = "cnn_skin_disease_model.zip"
 try:
     trained_model = tf.keras.models.load_model(model_path)
     st.success(f"Model loaded successfully from {model_path}")
