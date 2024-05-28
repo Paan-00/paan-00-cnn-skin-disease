@@ -27,30 +27,15 @@ class VideoTransformer(VideoTransformerBase):
         return predictions, result_index
 
 # Tensorflow model prediction
-def model_prediction(input_image, model):
-    try:
-        image = Image.open(io.BytesIO(input_image.read()))  # Read the content as bytes
-        image = image.resize((128, 128))  # Ensure the image is the correct size for the model
-        input_arr = tf.keras.preprocessing.image.img_to_array(image)
-        input_arr = np.array([input_arr])  # Convert single image to batch
+def model_prediction(input_image):
+    trained_model = tf.keras.models.load_model("cnn_skin_disease_model.keras")
+    image = tf.keras.preprocessing.image.load_img(input_image,target_size=(228,228))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    input_arr = np.array([input_arr]) # To convert single image to batch
+    predictions = trained_model.predict(input_arr)
+    result_index = np.argmax(predictions)
 
-        # Perform the prediction
-        predictions = model.predict(input_arr)
-        result_index = np.argmax(predictions)
-
-        return result_index
-    except Exception as e:
-        st.error(f"Error in model prediction: {e}")
-        return None
-
-# Load the trained model
-model_path = "cnn_skin_disease_model.keras"
-try:
-    trained_model = tf.keras.models.load_model(model_path)
-    st.success(f"Model loaded successfully from {model_path}")
-except Exception as e:
-    st.error(f"Error loading the model: {e}")
-    trained_model = None
+    return result_index
 
 st.markdown("""
 <style>
@@ -59,7 +44,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
 # Sidebar
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
