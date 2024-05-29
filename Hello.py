@@ -5,7 +5,6 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
-import cv2
 
 st.set_page_config(
     page_title="Detection System",
@@ -25,12 +24,7 @@ class VideoTransformer(VideoTransformerBase):
         input_arr = np.array([input_arr])
         predictions = self.model.predict(input_arr)
         result_index = np.argmax(predictions)
-        confidence = np.max(predictions) * 100  # Calculate confidence as a percentage
-        label = f"{result_index} ({confidence:.2f}%)"
-        
-        # Draw label on the image
-        img = cv2.putText(img, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-        return av.VideoFrame.from_ndarray(img, format="bgr24")
+        return predictions, result_index
 
 # Tensorflow model prediction
 def model_prediction(input_image, model):
@@ -43,12 +37,11 @@ def model_prediction(input_image, model):
         # Perform the prediction
         predictions = model.predict(input_arr)
         result_index = np.argmax(predictions)
-        confidence = np.max(predictions) * 100  # Calculate confidence as a percentage
 
-        return result_index, confidence
+        return result_index
     except Exception as e:
         st.error(f"Error in model prediction: {e}")
-        return None, None
+        return None
 
 # Load the trained model
 model_path = "cnn_skin_disease_model.h5"
@@ -104,25 +97,34 @@ elif app_mode == "Disease Recognition":
             if st.button("Predict"):
                 st.write("Our Prediction")
                 if trained_model:
-                    result_index, confidence = model_prediction(input_image, trained_model)
+                    result_index = model_prediction(input_image, trained_model)
                     if result_index is not None:
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted} with {confidence:.2f}% confidence")
+                        st.success(f"Model is Predicting it's {model_predicted}")
+                        # Calculate accuracy
+                        accuracy = None
+                        if ground_truth_labels:
+                            ground_truth_label = ground_truth_labels[input_image_name]  # Get the ground truth label
+                            if ground_truth_label == model_predicted:
+                                accuracy = 1.0  # Correct prediction
+                            else:
+                                accuracy = 0.0  # Incorrect prediction
+            
+                        # Display accuracy
+                        if accuracy is not None:
+                            st.info(f"Accuracy: {accuracy:.2f}")
+                            
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
                     st.error("Model not loaded. Please check the model file.")
     elif input_method == "Live Camera":
         if trained_model:
-            # Ensure video_transformer is initialized in session state
             if 'video_transformer' not in st.session_state:
-                st.session_state['video_transformer'] = VideoTransformer(trained_model)
+                st.session_state.video_transformer = VideoTransformer(trained_model)
 
-            webrtc_ctx = webrtc_streamer(
-                key="example",
-                video_transformer_factory=lambda: st.session_state['video_transformer']
-            )
+            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
             if webrtc_ctx.video_transformer:
                 st.write("Using live camera input for prediction")
         else:
