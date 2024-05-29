@@ -110,10 +110,14 @@ elif app_mode == "Disease Recognition":
                     st.error("Model not loaded. Please check the model file.")
     elif input_method == "Live Camera":
         if trained_model:
+            # Ensure video_transformer is initialized in session state
             if 'video_transformer' not in st.session_state:
                 st.session_state.video_transformer = VideoTransformer(trained_model)
 
-            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+            webrtc_ctx = webrtc_streamer(
+                key="example",
+                video_transformer_factory=lambda: st.session_state.video_transformer
+            )
             if webrtc_ctx.video_transformer:
                 st.write("Using live camera input for prediction")
         else:
