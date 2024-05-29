@@ -5,6 +5,7 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
+import cv2
 
 st.set_page_config(
     page_title="Detection System",
@@ -25,7 +26,11 @@ class VideoTransformer(VideoTransformerBase):
         predictions = self.model.predict(input_arr)
         result_index = np.argmax(predictions)
         confidence = np.max(predictions) * 100  # Calculate confidence as a percentage
-        return predictions, result_index, confidence
+        label = f"{result_index} ({confidence:.2f}%)"
+        
+        # Draw label on the image
+        img = cv2.putText(img, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
 
 # Tensorflow model prediction
 def model_prediction(input_image, model):
