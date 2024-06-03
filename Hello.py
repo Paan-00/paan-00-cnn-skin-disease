@@ -49,6 +49,7 @@ def model_prediction(input_image, model):
 model_path = "cnn_skin_disease_model.h5"
 try:
     trained_model = tf.keras.models.load_model(model_path)
+    st.success(f"Model loaded successfully from {model_path}")
 except Exception as e:
     st.error(f"Error loading the model: {e}")
     trained_model = None
@@ -107,7 +108,7 @@ elif app_mode == "Disease Recognition":
                     if result_index is not None:
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted} with {confidence:.2f}% confidence")
+                        st.success(f"Model is predicting it's {model_predicted} with {confidence:.2f}% confidence")
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
