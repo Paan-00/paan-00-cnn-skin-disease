@@ -63,15 +63,6 @@ st.markdown("""
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
 
-# Define ground truth labels (for demonstration purposes)
-# In a real scenario, these would come from a dataset or user input
-ground_truth_labels = {
-    "example_image_1.jpg": "Acne",
-    "example_image_2.jpg": "Eczema",
-    "example_image_3.jpg": "Melanoma",
-    "example_image_4.jpg": "Normal"
-}
-
 # Main Page
 if app_mode == "Home":
     st.header("SKIN DISEASE DETECTION SYSTEM")
@@ -113,8 +104,7 @@ elif app_mode == "Disease Recognition":
                         st.success(f"Model is Predicting it's {model_predicted}")
                         # Calculate accuracy
                         accuracy = None
-                        input_image_name = input_image.name
-                        if input_image_name in ground_truth_labels:
+                        if ground_truth_labels:
                             ground_truth_label = ground_truth_labels[input_image_name]  # Get the ground truth label
                             if ground_truth_label == model_predicted:
                                 accuracy = 1.0  # Correct prediction
