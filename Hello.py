@@ -4,7 +4,6 @@ import numpy as np
 from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
-import av
 
 st.set_page_config(
     page_title="Detection System",
@@ -61,10 +60,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'video_processor' not in st.session_state:
-    st.session_state.video_processor = None
-
 # Sidebar
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
@@ -92,33 +87,15 @@ if app_mode == "Home":
     """)
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
-    input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
-    
-    if input_method == "Upload Image":
-        input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
-        if input_image:
-            st.image(input_image, use_column_width=True)
-            
-            # Predicting Image
-            if st.button("Predict"):
-                st.write("Our Prediction")
-                if trained_model:
-                    result_index = model_prediction(input_image, trained_model)
-                    if result_index is not None:
-                        class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
-                        model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted}")
-                    else:
-                        st.error("Prediction failed. Please try again.")
-                else:
-                    st.error("Model not loaded. Please check the model file.")
-    elif input_method == "Live Camera":
-        if trained_model:
-            if st.session_state.video_processor is None:
-                st.session_state.video_processor = VideoProcessor(trained_model)
+    st.write("Using live camera input for prediction")
 
-            webrtc_ctx = webrtc_streamer(key="example", video_processor_factory=lambda: st.session_state.video_processor)
-            if webrtc_ctx.video_processor:
-                st.write("Using live camera input for prediction")
+    if 'video_processor' not in st.session_state:
+        if trained_model:
+            st.session_state.video_processor = VideoProcessor(trained_model)
         else:
             st.error("Model not loaded. Please check the model file.")
+
+    if 'video_processor' in st.session_state:
+        webrtc_ctx = webrtc_streamer(key="example", video_processor_factory=lambda: st.session_state.video_processor)
+        if webrtc_ctx.video_processor:
+            st.write("Using live camera input for prediction")
