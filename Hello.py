@@ -44,9 +44,10 @@ def model_prediction(input_image, model):
         return None
 
 # Load the trained model
-model_path = "cnn_skin_disease_model.h5"
+model_path = "cnn_skin_disease_model.keras"
 try:
     trained_model = tf.keras.models.load_model(model_path)
+    st.success(f"Model loaded successfully from {model_path}")
 except Exception as e:
     st.error(f"Error loading the model: {e}")
     trained_model = None
@@ -58,6 +59,10 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# Initialize session state
+if 'video_transformer' not in st.session_state:
+    st.session_state.video_transformer = None
 
 # Sidebar
 st.sidebar.title("Dashboard")
@@ -102,26 +107,13 @@ elif app_mode == "Disease Recognition":
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
                         st.success(f"Model is Predicting it's {model_predicted}")
-                        # Calculate accuracy
-                        accuracy = None
-                        if ground_truth_labels:
-                            ground_truth_label = ground_truth_labels[input_image_name]  # Get the ground truth label
-                            if ground_truth_label == model_predicted:
-                                accuracy = 1.0  # Correct prediction
-                            else:
-                                accuracy = 0.0  # Incorrect prediction
-            
-                        # Display accuracy
-                        if accuracy is not None:
-                            st.info(f"Accuracy: {accuracy:.2f}")
-                            
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
                     st.error("Model not loaded. Please check the model file.")
     elif input_method == "Live Camera":
         if trained_model:
-            if 'video_transformer' not in st.session_state:
+            if st.session_state.video_transformer is None:
                 st.session_state.video_transformer = VideoTransformer(trained_model)
 
             webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
