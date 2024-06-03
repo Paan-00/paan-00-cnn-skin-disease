@@ -24,7 +24,8 @@ class VideoTransformer(VideoTransformerBase):
         input_arr = np.array([input_arr])
         predictions = self.model.predict(input_arr)
         result_index = np.argmax(predictions)
-        return predictions, result_index
+        confidence = predictions[0][result_index] * 100
+        return predictions, result_index, confidence
 
 # Tensorflow model prediction
 def model_prediction(input_image, model):
@@ -37,11 +38,12 @@ def model_prediction(input_image, model):
         # Perform the prediction
         predictions = model.predict(input_arr)
         result_index = np.argmax(predictions)
+        confidence = predictions[0][result_index] * 100
 
-        return result_index
+        return result_index, confidence
     except Exception as e:
         st.error(f"Error in model prediction: {e}")
-        return None
+        return None, None
 
 # Load the trained model
 model_path = "cnn_skin_disease_model.h5"
@@ -102,11 +104,11 @@ elif app_mode == "Disease Recognition":
             if st.button("Predict"):
                 st.write("Our Prediction")
                 if trained_model:
-                    result_index = model_prediction(input_image, trained_model)
+                    result_index, confidence = model_prediction(input_image, trained_model)
                     if result_index is not None:
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
-                        st.success(f"Model is Predicting it's {model_predicted}")
+                        st.success(f"Model is Predicting it's {model_predicted} with {confidence:.2f}% confidence")
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
