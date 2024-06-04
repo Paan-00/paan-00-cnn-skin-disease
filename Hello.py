@@ -125,7 +125,7 @@ elif app_mode == "Info":
 
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
-    input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
+    input_method = st.selectbox("Select input method:", ["Upload Image"])#, "Live Camera"])
     
     if input_method == "Upload Image":
         input_image = st.file_uploader("Choose an Image:", type=['jpg', 'png', 'jpeg'])
@@ -163,10 +163,10 @@ elif app_mode == "Disease Recognition":
                     except Exception as e:
                         st.error(f"An error occurred: {e}")
 
-    elif input_method == "Live Camera":
-        if trained_model:
-            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
-            if webrtc_ctx and webrtc_ctx.video_transformer:
-                st.write("Using live camera input for prediction")
-        else:
-            st.error("Model not loaded. Please check the model file.")
+   # elif input_method == "Live Camera":
+   #     if trained_model:
+   #         webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+   #         if webrtc_ctx and webrtc_ctx.video_transformer:
+   #             st.write("Using live camera input for prediction")
+   #     else:
+   #         st.error("Model not loaded. Please check the model file.")
