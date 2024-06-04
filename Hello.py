@@ -5,6 +5,7 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
+import cv2
 
 st.set_page_config(
     page_title="Detection System",
@@ -25,8 +26,8 @@ class VideoTransformer(VideoTransformerBase):
         predictions = self.model.predict(input_arr)
         result_index = np.argmax(predictions)
         confidence = predictions[0][result_index] * 100
-        
-        # Overlay the prediction on the frame
+
+        class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
         result_text = f'{class_name[result_index]}: {confidence:.2f}%'
         img = np.array(img)
         img = cv2.putText(img, result_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
