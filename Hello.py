@@ -25,7 +25,12 @@ class VideoTransformer(VideoTransformerBase):
         predictions = self.model.predict(input_arr)
         result_index = np.argmax(predictions)
         confidence = predictions[0][result_index] * 100
-        return predictions, result_index, confidence
+        
+        # Overlay the prediction on the frame
+        result_text = f'{class_name[result_index]}: {confidence:.2f}%'
+        img = np.array(img)
+        img = cv2.putText(img, result_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        return av.VideoFrame.from_ndarray(img, format='bgr24')
 
 # Tensorflow model prediction
 def model_prediction(input_image, model):
