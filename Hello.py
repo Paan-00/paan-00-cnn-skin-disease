@@ -54,7 +54,6 @@ def model_prediction(input_image, model):
 # Load the trained model
 model_path = "cnn_skin_disease_model.h5"
 try:
-    trained_model = tf.keras.models.load_model(model_path)
     st.success(f"Model loaded successfully from {model_path}")
 except Exception as e:
     st.error(f"Error loading the model: {e}")
@@ -137,6 +136,21 @@ elif app_mode == "Disease Recognition":
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
                         st.success(f"Model is predicting it's {model_predicted} with {confidence:.2f}% confidence")
+                        
+                        # Button to display information
+                        if st.button("Show Information"):
+                            try:
+                                # Dynamically import the module based on the prediction
+                                module = importlib.import_module(model_predicted)
+                                info_content = module.get_info()
+                                st.subheader(f"Information about {model_predicted}")
+                                st.write(info_content)
+                            except ModuleNotFoundError:
+                                st.error(f"Information module for {model_predicted} not found.")
+                            except AttributeError:
+                                st.error(f"Information function not found in the {model_predicted} module.")
+                            except Exception as e:
+                                st.error(f"An error occurred: {e}")
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
