@@ -100,6 +100,22 @@ if app_mode == "Home":
     ### Get Started
     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Skin Disease Recognition System!
     """)
+
+elif app_mode == "Info":
+    st.header("Information on Skin Diseases")
+    class_name = st.selectbox("Select a disease to get more information:", ['Acne', 'Eczema', 'Melanoma'])
+    
+    if class_name:
+        file_path = f"info/{class_name.lower()}.txt"
+        try:
+            with open(file_path, "r") as file:
+                info_content = file.read()
+            st.subheader(f"Information about {class_name}")
+            st.write(info_content)
+        except FileNotFoundError:
+            st.error(f"Information file for {class_name} not found.")
+
+    
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
     input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
