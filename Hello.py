@@ -5,9 +5,9 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
-import acne
-import melanoma
-import eczema
+import Acne
+import Melanoma
+import Eczema
 
 st.set_page_config(
     page_title="Detection System",
