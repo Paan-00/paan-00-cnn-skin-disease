@@ -71,9 +71,9 @@ st.markdown("""
 # Initialize session state for video transformer
 if 'video_transformer' not in st.session_state:
     if trained_model:
-        st.session_state.video_transformer = VideoTransformer(trained_model)
+        st.session_state['video_transformer'] = VideoTransformer(trained_model)
     else:
-        st.session_state.video_transformer = None
+        st.session_state['video_transformer'] = None
 
 # Sidebar
 st.sidebar.title("Dashboard")
@@ -124,8 +124,11 @@ elif app_mode == "Disease Recognition":
                     st.error("Model not loaded. Please check the model file.")
     elif input_method == "Live Camera":
         if trained_model:
-            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
-            if webrtc_ctx.video_transformer:
-                st.write("Using live camera input for prediction")
+            if st.session_state.video_transformer:
+                webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+                if webrtc_ctx.video_transformer:
+                    st.write("Using live camera input for prediction")
+            else:
+                st.error("Video transformer is not initialized.")
         else:
             st.error("Model not loaded. Please check the model file.")
