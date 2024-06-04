@@ -74,6 +74,11 @@ if 'video_transformer' not in st.session_state:
     else:
         st.session_state.video_transformer = None
 
+# Initialize session state for prediction result
+if 'prediction_result' not in st.session_state:
+    st.session_state.prediction_result = None
+    st.session_state.prediction_confidence = None
+
 # Sidebar
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page", ["Home", "Info", "Disease Recognition"])
@@ -135,26 +140,29 @@ elif app_mode == "Disease Recognition":
                     if result_index is not None:
                         class_name = ['Acne', 'Eczema', 'Melanoma', 'Normal']
                         model_predicted = class_name[result_index]
+                        st.session_state.prediction_result = model_predicted
+                        st.session_state.prediction_confidence = confidence
                         st.success(f"Model is predicting it's {model_predicted} with {confidence:.2f}% confidence")
-                        
-                        # Button to display information
-                        if st.button("Show Information"):
-                            try:
-                                # Dynamically import the module based on the prediction
-                                module = importlib.import_module(model_predicted)
-                                info_content = module.get_info()
-                                st.subheader(f"Information about {model_predicted}")
-                                st.write(info_content)
-                            except ModuleNotFoundError:
-                                st.error(f"Information module for {model_predicted} not found.")
-                            except AttributeError:
-                                st.error(f"Information function not found in the {model_predicted} module.")
-                            except Exception as e:
-                                st.error(f"An error occurred: {e}")
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
                     st.error("Model not loaded. Please check the model file.")
+
+            if st.session_state.prediction_result:
+                if st.button("Show Information"):
+                    try:
+                        # Dynamically import the module based on the prediction
+                        module = importlib.import_module(st.session_state.prediction_result)
+                        info_content = module.get_info()
+                        st.subheader(f"Information about {st.session_state.prediction_result}")
+                        st.write(info_content)
+                    except ModuleNotFoundError:
+                        st.error(f"Information module for {st.session_state.prediction_result} not found.")
+                    except AttributeError:
+                        st.error(f"Information function not found in the {st.session_state.prediction_result} module.")
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")
+
     elif input_method == "Live Camera":
         if trained_model:
             webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
