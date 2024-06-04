@@ -5,7 +5,7 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
-import cv2
+import importlib
 
 st.set_page_config(
     page_title="Detection System",
@@ -71,13 +71,13 @@ st.markdown("""
 # Initialize session state for video transformer
 if 'video_transformer' not in st.session_state:
     if trained_model:
-        st.session_state['video_transformer'] = VideoTransformer(trained_model)
+        st.session_state.video_transformer = VideoTransformer(trained_model)
     else:
-        st.session_state['video_transformer'] = None
+        st.session_state.video_transformer = None
 
 # Sidebar
 st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page", ["Home", "Info", "Disease Recognition"])
+app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition", "Info"])
 
 # Main Page
 if app_mode == "Home":
@@ -100,22 +100,6 @@ if app_mode == "Home":
     ### Get Started
     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Skin Disease Recognition System!
     """)
-
-elif app_mode == "Info":
-    st.header("Information on Skin Diseases")
-    class_name = st.selectbox("Select a disease to get more information:", ['Acne', 'Eczema', 'Melanoma'])
-    
-    if class_name:
-        file_path = f"info/{class_name.lower()}.py"
-        try:
-            with open(file_path, "r") as file:
-                info_content = file.read()
-            st.subheader(f"Information about {class_name}")
-            st.write(info_content)
-        except FileNotFoundError:
-            st.error(f"Information file for {class_name} not found.")
-
-    
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
     input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
@@ -140,11 +124,25 @@ elif app_mode == "Disease Recognition":
                     st.error("Model not loaded. Please check the model file.")
     elif input_method == "Live Camera":
         if trained_model:
-            if st.session_state.video_transformer:
-                webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
-                if webrtc_ctx.video_transformer:
-                    st.write("Using live camera input for prediction")
-            else:
-                st.error("Video transformer is not initialized.")
+            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+            if webrtc_ctx and webrtc_ctx.video_transformer:
+                st.write("Using live camera input for prediction")
         else:
             st.error("Model not loaded. Please check the model file.")
+elif app_mode == "Info":
+    st.header("Information on Skin Diseases")
+    class_name = st.selectbox("Select a class name to get more information:", ['Acne', 'Eczema', 'Melanoma', 'Normal'])
+    
+    if class_name:
+        try:
+            # Dynamically import the module based on the selected class name
+            module = importlib.import_module(class_name)
+            info_content = module.get_info()
+            st.subheader(f"Information about {class_name}")
+            st.write(info_content)
+        except ModuleNotFoundError:
+            st.error(f"Information module for {class_name} not found.")
+        except AttributeError:
+            st.error(f"Information function not found in the {class_name} module.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
