@@ -5,6 +5,7 @@ from PIL import Image
 import io
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
+import importlib
 import Acne
 import Melanoma
 import Eczema
