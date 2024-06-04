@@ -68,9 +68,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
+# Initialize session state for video transformer
 if 'video_transformer' not in st.session_state:
-    st.session_state.video_transformer = VideoTransformer(trained_model) if trained_model else None
+    if trained_model:
+        st.session_state.video_transformer = VideoTransformer(trained_model)
+    else:
+        st.session_state.video_transformer = None
 
 # Sidebar
 st.sidebar.title("Dashboard")
