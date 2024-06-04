@@ -106,7 +106,7 @@ elif app_mode == "Info":
     class_name = st.selectbox("Select a disease to get more information:", ['Acne', 'Eczema', 'Melanoma'])
     
     if class_name:
-        file_path = f"info/{class_name.lower()}.txt"
+        file_path = f"info/{class_name.lower()}.py"
         try:
             with open(file_path, "r") as file:
                 info_content = file.read()
