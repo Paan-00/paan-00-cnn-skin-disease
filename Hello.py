@@ -77,7 +77,7 @@ if 'video_transformer' not in st.session_state:
 
 # Sidebar
 st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition", "Info"])
+app_mode = st.sidebar.selectbox("Select Page", ["Home", "Info", "Disease Recognition"])
 
 # Main Page
 if app_mode == "Home":
@@ -100,6 +100,25 @@ if app_mode == "Home":
     ### Get Started
     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Skin Disease Recognition System!
     """)
+
+elif app_mode == "Info":
+    st.header("Information on Skin Diseases")
+    class_name = st.selectbox("Select a class name to get more information:", ['Acne', 'Eczema', 'Melanoma'])
+    
+    if class_name:
+        try:
+            # Dynamically import the module based on the selected class name
+            module = importlib.import_module(class_name)
+            info_content = module.get_info()
+            st.subheader(f"Information about {class_name}")
+            st.write(info_content)
+        except ModuleNotFoundError:
+            st.error(f"Information module for {class_name} not found.")
+        except AttributeError:
+            st.error(f"Information function not found in the {class_name} module.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
 elif app_mode == "Disease Recognition":
     st.header("Disease Recognition")
     input_method = st.selectbox("Select input method:", ["Upload Image", "Live Camera"])
@@ -129,20 +148,3 @@ elif app_mode == "Disease Recognition":
                 st.write("Using live camera input for prediction")
         else:
             st.error("Model not loaded. Please check the model file.")
-elif app_mode == "Info":
-    st.header("Information on Skin Diseases")
-    class_name = st.selectbox("Select a class name to get more information:", ['Acne', 'Eczema', 'Melanoma', 'Normal'])
-    
-    if class_name:
-        try:
-            # Dynamically import the module based on the selected class name
-            module = importlib.import_module(class_name)
-            info_content = module.get_info()
-            st.subheader(f"Information about {class_name}")
-            st.write(info_content)
-        except ModuleNotFoundError:
-            st.error(f"Information module for {class_name} not found.")
-        except AttributeError:
-            st.error(f"Information function not found in the {class_name} module.")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
