@@ -142,11 +142,11 @@ elif app_mode == "Disease Recognition":
                         
                         # Button to display information
                         if model_predicted == 'Acne' and st.button("Show Info"):
-                            st.markdown(acne.get_info())
+                            st.markdown(Acne.get_info())
                         elif model_predicted == 'Melanoma' and st.button("Show Info"):
-                            st.markdown(melanoma.get_info())
+                            st.markdown(Melanoma.get_info())
                         elif model_predicted == 'Eczema' and st.button("Show Info"):
-                            st.markdown(eczema.get_info())
+                            st.markdown(Eczema.get_info())
                     else:
                         st.error("Prediction failed. Please try again.")
                 else:
