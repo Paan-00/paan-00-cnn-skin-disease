@@ -165,7 +165,7 @@ elif app_mode == "Disease Recognition":
 
     elif input_method == "Live Camera":
         if trained_model:
-            webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=lambda: st.session_state.video_transformer)
+            webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
             if webrtc_ctx and webrtc_ctx.video_transformer:
                 st.write("Using live camera input for prediction")
         else:
