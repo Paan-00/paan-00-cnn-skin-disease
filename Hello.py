@@ -73,7 +73,6 @@ if 'video_transformer' not in st.session_state:
         st.session_state.video_transformer = VideoTransformer(trained_model)
     else:
         st.session_state.video_transformer = None
-st.write(st.session_state)
 
 # Initialize session state for prediction result
 if 'prediction_result' not in st.session_state:
