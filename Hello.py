@@ -77,7 +77,7 @@ if 'video_transformer' not in st.session_state:
 
 # Sidebar
 st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page", ["Home", "Disease Recognition"])
+app_mode = st.sidebar.selectbox("Select Page", ["Home", "Info", "Disease Recognition"])
 
 # Main Page
 if app_mode == "Home":
