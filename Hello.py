@@ -54,7 +54,7 @@ def model_prediction(input_image, model):
 # Load the trained model
 model_path = "cnn_skin_disease_model.h5"
 try:
-    st.success(f"Model loaded successfully from {model_path}")
+    trained_model = tf.keras.models.load_model(model_path)
 except Exception as e:
     st.error(f"Error loading the model: {e}")
     trained_model = None
